@@ -14,8 +14,8 @@ import view.administrator.NewUser;
 import view.authentification.LoginDialog;
 import view.secretary.Appointment;
 import view.secretary.AppointmentLists;
-import view.secretary.CreatePatientFolder;
 import view.secretary.Chart;
+import view.secretary.CreatePatientFolder;
 import view.secretary.ListPatientsFolder;
 
 /**
@@ -60,7 +60,6 @@ public class Application extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(MAXIMIZED_BOTH);
-        setResizable(false);
 
         userName.setMnemonic('f');
         userName.setText("Nom du personnel connecté");
@@ -75,7 +74,7 @@ public class Application extends javax.swing.JFrame {
         userName.add(logoutMenuItem);
 
         exitMenuItem.setMnemonic('x');
-        exitMenuItem.setText("Exit");
+        exitMenuItem.setText("Quitter");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitMenuItemActionPerformed(evt);
@@ -230,7 +229,11 @@ public class Application extends javax.swing.JFrame {
     }//GEN-LAST:event_patientMenuItemActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        appointmentList();
+        try {
+            appointmentList();
+        } catch (SQLException ex) {
+            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
@@ -324,22 +327,26 @@ public class Application extends javax.swing.JFrame {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.desktopPane.add(this.appointment);
+        this.appointment.toFront();
     }
 
     private void about() {
         this.about = new About();
         this.desktopPane.add(this.about);
+        this.about.toFront();
     }
 
     private void newPatient() {
         this.new_patient_folder = new CreatePatientFolder();
         this.desktopPane.add(this.new_patient_folder);
+        this.new_patient_folder.toFront();
     }
 
     public void listPatients() throws SQLException {
         this.list_patient_folder = new ListPatientsFolder();
         this.list_patient_folder.setVisible(true);
         this.desktopPane.add(this.list_patient_folder);
+        this.list_patient_folder.toFront();
     }
 
     public void initChart() {
@@ -353,6 +360,7 @@ public class Application extends javax.swing.JFrame {
         this.newUser = new NewUser();
         this.desktopPane.add(this.newUser);
         this.newUser.setVisible(true);
+        this.newUser.toFront();
     }
 
     private void logout() {
@@ -363,9 +371,10 @@ public class Application extends javax.swing.JFrame {
         }
     }
 
-    private void appointmentList() {
+    private void appointmentList() throws SQLException {
         this.appointList = new AppointmentLists();
         this.desktopPane.add(this.appointList);
         this.appointList.setVisible(true);
+        this.appointList.toFront();
     }
 }

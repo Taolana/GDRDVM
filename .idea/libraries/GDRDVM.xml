@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="GDRDVM">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/GDRDVM.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

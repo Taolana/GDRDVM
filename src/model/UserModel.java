@@ -20,15 +20,13 @@ public class UserModel extends Metier implements Serializable {
     private String password;
     private String email;
     private String phone_number;
-    private int role_id;
+    int role_id;
 
-    public UserModel(String full_name, int role_id, String login, String password, String email, String phone_number) {
+    public UserModel(int id, int role_id, String full_name, String phone_number) {
         this.full_name = full_name;
-        this.login = login;
-        this.password = password;
-        this.email = email;
         this.phone_number = phone_number;
         this.role_id = role_id;
+        this.id = id;
     }
 
     public UserModel(int id, String full_name, String login, String password, String email, String phone_number, int role_id) {
@@ -45,9 +43,22 @@ public class UserModel extends Metier implements Serializable {
         this.full_name = full_name;
         this.id = id;
     }
+    
+    public UserModel(int id){
+        this.id = id;
+    }
 
     public UserModel() {
 
+    }
+
+    public UserModel(String full_name, int idRole, String login, String hashed, String email, String mobile) {
+        this.full_name = full_name;
+        this.role_id =idRole;
+        this.login = login;
+        this.password = hashed;
+        this.email = email;
+        this.phone_number = mobile;
     }
 
     public int getId() {

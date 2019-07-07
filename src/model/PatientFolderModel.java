@@ -37,13 +37,22 @@ public class PatientFolderModel {
         this.birth_date = birth_date;
         this.adress = adress;
     }
-
+    
+    public PatientFolderModel(int id) {
+        this.id = id;
+    }
+    
     public PatientFolderModel() {
 
     }
 
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLast_name() {

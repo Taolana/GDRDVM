@@ -40,6 +40,7 @@ public class Chart extends javax.swing.JInternalFrame {
 // add it to our application
         setContentPane(chartPanel);
         setClosable(true);
+        chartPanel.setBounds(100, 100, 347, 236);
 
     }
 
@@ -51,6 +52,9 @@ public class Chart extends javax.swing.JInternalFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
+        setAlignmentX(20.0F);
+        setAlignmentY(20.0F);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,7 +76,7 @@ public class Chart extends javax.swing.JInternalFrame {
      private static final long serialVersionUID = 1L;
 
     /**
-     * Creates a sample dataset
+     * Creates a sample data set
      */
     private PieDataset createDataset() {
         DefaultPieDataset result = new DefaultPieDataset();

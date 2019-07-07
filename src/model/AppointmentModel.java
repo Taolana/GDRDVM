@@ -20,17 +20,27 @@ public class AppointmentModel {
     private Timestamp timestamp;
     private String date;
 
-    public AppointmentModel() {
-
-    }
-
-    public AppointmentModel(int idpatientfolder, int idmedics, int idcreno, String date, Timestamp ts) {
+    public AppointmentModel(int id,int idpatientfolder, int idmedics, int idcreno, String date, Timestamp ts) {
+        this.id = id;
         this.patient_folder_id = idpatientfolder;
         this.medic_id = idmedics;
         this.crenel_id = idcreno;
         this.date = date;
         this.timestamp = ts;
     }
+    public AppointmentModel() {
+
+    }
+
+    public AppointmentModel(int idpatientfolder, int idmedics, int idcreno, String date, Timestamp ts) {
+        
+        this.patient_folder_id = idpatientfolder;
+        this.medic_id = idmedics;
+        this.crenel_id = idcreno;
+        this.date = date;
+        this.timestamp = ts;
+    }
+
 
 
     @Override
@@ -40,6 +50,10 @@ public class AppointmentModel {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
 

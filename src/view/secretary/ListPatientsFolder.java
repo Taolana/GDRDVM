@@ -6,11 +6,20 @@
 package view.secretary;
 
 import dao.PatientFolderDao;
+import dao.RoleDao;
+import extrapackages.AgeCalculator;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JDesktopPane;
 import javax.swing.table.DefaultTableModel;
+import model.AgeModel;
 import model.PatientFolderModel;
 
 /**
@@ -19,13 +28,20 @@ import model.PatientFolderModel;
  */
 public class ListPatientsFolder extends javax.swing.JInternalFrame {
 
+    public static DefaultComboBoxModel modelNumbersToShow = new DefaultComboBoxModel();
+    public DefaultTableModel tableForListPatientFolder;
+    public static String value = "";
+    public static Object limit = null;
+    public static int index = 0;
+    public static String idPassToAppointment = "";
+
     /**
      * Creates new form ListPatientsFolder
      */
     public ListPatientsFolder() throws SQLException {
         initComponents();
-        patientFolderList("");
-        lastInsertedPatient();
+        patientFolderList("", "");
+        initFiltersComponents();
     }
 
     /**
@@ -40,17 +56,14 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         searchValueTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jLabel6 = new javax.swing.JLabel();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        numbersToShowComboBox = new javax.swing.JComboBox<>();
+        numberOfResultsLabel = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        takeRdvButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         firstNameLabel = new javax.swing.JLabel();
@@ -83,20 +96,18 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
 
         jLabel3.setText("Afficher");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        numbersToShowComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        numbersToShowComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                numbersToShowComboBoxActionPerformed(evt);
+            }
+        });
 
-        jLabel4.setText("sur (100)");
-
-        jLabel5.setText("Trier");
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jLabel6.setText("par");
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        numberOfResultsLabel.setText("sur (100)");
 
         jLabel7.setText("Rechercher");
 
+        jButton1.setForeground(new java.awt.Color(255, 4, 4));
         jButton1.setText("Supprimer un dossier");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -104,11 +115,36 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton2.setForeground(new java.awt.Color(124, 91, 0));
         jButton2.setText("Modifier un dossier");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
+        jButton3.setForeground(new java.awt.Color(8, 34, 124));
         jButton3.setText("Actualiser");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
+        jButton4.setForeground(new java.awt.Color(16, 117, 52));
         jButton4.setText("Créer un nouveau patient");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        takeRdvButton.setText("Prendre R.D.V.");
+        takeRdvButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                takeRdvButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -121,26 +157,19 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
                     .addComponent(searchValueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton4)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel5))
+                        .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(numbersToShowComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(18, 18, 18)
-                                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(numberOfResultsLabel))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(takeRdvButton, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -153,22 +182,18 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                    .addComponent(numbersToShowComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numberOfResultsLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addComponent(jButton4)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton3)
                     .addComponent(jButton1))
                 .addGap(18, 18, 18)
-                .addComponent(jButton2)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(takeRdvButton))
                 .addContainerGap())
         );
 
@@ -297,10 +322,11 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel1)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jLabel2))
+                            .addGap(243, 243, 243)))
+                    .addComponent(jLabel2)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -319,13 +345,13 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         pack();
@@ -336,7 +362,8 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void listPatientTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listPatientTableMouseClicked
-        int index = listPatientTable.getSelectedRow();
+
+        index = listPatientTable.getSelectedRow();
         try {
             showPatientSelected(index);
         } catch (SQLException ex) {
@@ -345,13 +372,50 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_listPatientTableMouseClicked
 
     private void searchValueTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchValueTextFieldKeyReleased
-        String valueOf = searchValueTextField.getText();
+        value = searchValueTextField.getText();
         try {
-            patientFolderList(valueOf);
+            patientFolderList(value, "");
         } catch (SQLException ex) {
             Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_searchValueTextFieldKeyReleased
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        newPatientFolder();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void numbersToShowComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numbersToShowComboBoxActionPerformed
+        limit = numbersToShowComboBox.getSelectedItem();
+        try {
+            patientFolderList("", limit.toString());
+        } catch (SQLException ex) {
+            Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_numbersToShowComboBoxActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        try {
+            refreshAll();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            updatePatientFolder();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void takeRdvButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_takeRdvButtonActionPerformed
+        try {
+            takeAppointment();
+        } catch (SQLException ex) {
+            Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_takeRdvButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -363,9 +427,6 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -374,9 +435,6 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
@@ -385,24 +443,49 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JLabel lastNameLabel;
     public javax.swing.JTable listPatientTable;
+    private javax.swing.JLabel numberOfResultsLabel;
+    private javax.swing.JComboBox<String> numbersToShowComboBox;
     public javax.swing.JTextField searchValueTextField;
+    public javax.swing.JButton takeRdvButton;
     // End of variables declaration//GEN-END:variables
 
-    public void patientFolderList(String value) throws SQLException {
+    private void initFiltersComponents() throws SQLException {
+        PatientFolderDao dao = new PatientFolderDao();
+        int countPatients = dao.countPatients();
+        this.numberOfResultsLabel.setText("sur (" + countPatients + ")");
+
+        if (countPatients >= 1) {
+            int[] liste = {10, 20, 30, 50, 100, 200, 1000, countPatients};
+            for (Object o : liste) {
+                modelNumbersToShow.addElement(o);
+            }
+            this.numbersToShowComboBox.setModel(modelNumbersToShow);
+        } else {
+            this.numbersToShowComboBox.setEnabled(false);
+        }
+        this.numbersToShowComboBox.setSelectedIndex(7);
+        lastInsertedPatient();
+    }
+
+    public void patientFolderList(String value, String limit) throws SQLException {
+
         String[] columnNames = {
             "#", "Nom", "Prénom"
         };
-        DefaultTableModel tableForListPatientFolder = new DefaultTableModel(columnNames, 0);
+        tableForListPatientFolder = new DefaultTableModel(columnNames, 0);
         tableForListPatientFolder.setColumnCount(3);
 
         PatientFolderDao patientFolderDao = new PatientFolderDao();
         List<PatientFolderModel> patientFolderModel = null;
-        if (value.equals("")) {
+        if (value.equals("") && limit.equals("")) {
             patientFolderModel = patientFolderDao.selectAllPatientFolder();
         } else {
-            patientFolderModel = patientFolderDao.selectPatientBySearch(value);
+            if (!value.equals("")) {
+                patientFolderModel = patientFolderDao.selectPatientBySearch(value);
+            } else if (!limit.equals("")) {
+                patientFolderModel = patientFolderDao.selectWithLimitAndFilter(limit);
+            }
         }
-
         for (PatientFolderModel p : patientFolderModel) {
             int id = p.getId();
             String first_name = p.getFirst_name();
@@ -410,37 +493,223 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
             tableForListPatientFolder.addRow(new Object[]{
                 id,
                 first_name,
-                last_name,});
+                last_name
+            //last_name.setIcon(javax.swing.ImageIcon(getClass().getResource("/icons/ic_alarm_on_black_18dp.png"),
+            });
 
         }
         listPatientTable.setModel(tableForListPatientFolder);
     }
 
     public void showPatientSelected(int index) throws SQLException {
-        if (listPatientTable.getRowCount()!=0) {
+
+        if (listPatientTable.getRowCount() != 0) {
+
             PatientFolderDao patient = new PatientFolderDao();
-            String first_name = patient.selectAllPatientFolder().get(index).getFirst_name();
-            String last_name = patient.selectAllPatientFolder().get(index).getLast_name();
-            String gender = patient.selectAllPatientFolder().get(index).getGender();
-            String age = patient.selectAllPatientFolder().get(index).getBirth_date();
-            String adress = patient.selectAllPatientFolder().get(index).getAdress();
+            List<PatientFolderModel> patientFolderModel = null;
+
+            if (value.equals("")) {
+                patientFolderModel = patient.selectAllPatientFolder();
+                //System.err.println(listPatientTable.getRowCount());
+
+            } else {
+                patientFolderModel = patient.selectPatientBySearch(value);
+                //System.err.println(listPatientTable.getRowCount());
+            }
+
+            if (limit == null) {
+                //patientFolderModel = patient.selectAllPatientFolder();
+                //System.err.println(listPatientTable.getRowCount());
+            } else {
+                patientFolderModel = patient.selectWithLimitAndFilter(limit.toString());
+                //System.err.println(listPatientTable.getRowCount());
+            }
+
+            int idPassing = patientFolderModel.get(index).getId();
+            idPassToAppointment = Integer.toString(idPassing);
+
+            String first_name = patientFolderModel.get(index).getFirst_name();
+            String last_name = patientFolderModel.get(index).getLast_name();
+            String gender = patientFolderModel.get(index).getGender();
+            String age = patientFolderModel.get(index).getBirth_date();
+            String adress = patientFolderModel.get(index).getAdress();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date birthDate = null;
+            try {
+                birthDate = (Date) sdf.parse(age);
+            } catch (ParseException ex) {
+                Logger.getLogger(RoleDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            AgeCalculator ageFoo = new AgeCalculator();
+            AgeModel ageExact = ageFoo.calculateAge(birthDate);
+            String ageExactString = ageExact.toString();
+
             firstNameLabel.setText(first_name);
             lastNameLabel.setText(last_name);
             genderLabel.setText(gender);
-            ageLabel.setText(age);
+            ageLabel.setText(ageExactString);
             adressLabel.setText(adress);
-        }else{
+
+        } else {
+            System.out.println("Tableau vide");
+        }
+
+    }
+
+    public void lastInsertedPatient() throws SQLException {
+
+        int index = listPatientTable.getRowCount() - listPatientTable.getRowCount();
+        try {
+            showPatientSelected(index);
+
+            listPatientTable.getSelectionModel().setSelectionInterval(index, index);
+        } catch (SQLException ex) {
+            Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void selectPatientUpdated() throws SQLException {
+        showPatientSelected(index);
+        listPatientTable.getSelectionModel().setSelectionInterval(index, index);
+    }
+
+    private void newPatientFolder() {
+        CreatePatientFolder create = new CreatePatientFolder();
+        JDesktopPane desktopPane = getDesktopPane();
+        desktopPane.add(create);
+        create.setVisible(true);
+        this.setVisible(false);
+        create.toFront();
+    }
+
+    private void updatePatientFolderWindow() throws SQLException {
+        CreatePatientFolder create = new CreatePatientFolder();
+        JDesktopPane desktopPane = getDesktopPane();
+        desktopPane.add(create);
+        create.setVisible(true);
+        this.setVisible(false);
+        create.setTitle("Modifier un dossier patient");
+        create.toFront();
+        create.titleLabel.setText("Formulaire de modification d'un dossier patient");
+
+        if (listPatientTable.getRowCount() != 0) {
+
+            PatientFolderDao patient = new PatientFolderDao();
+            List<PatientFolderModel> patientFolderModel = null;
+
+            if (value.equals("")) {
+                patientFolderModel = patient.selectAllPatientFolder();
+                //System.err.println(listPatientTable.getRowCount());
+
+            } else {
+                patientFolderModel = patient.selectPatientBySearch(value);
+                //System.err.println(listPatientTable.getRowCount());
+            }
+
+            if (limit == null) {
+                //patientFolderModel = patient.selectAllPatientFolder();
+                //System.err.println(listPatientTable.getRowCount());
+            } else {
+                patientFolderModel = patient.selectWithLimitAndFilter(limit.toString());
+                System.err.println(listPatientTable.getRowCount());
+            }
+
+            String first_name = patientFolderModel.get(index).getFirst_name();
+            String last_name = patientFolderModel.get(index).getLast_name();
+            String gender = patientFolderModel.get(index).getGender();
+            String age = patientFolderModel.get(index).getBirth_date();
+            String adress = patientFolderModel.get(index).getAdress();
+            create.firstNameTextField.setText(first_name);
+            create.lastNameTextField.setText(last_name);
+            create.idPatientFolder = patientFolderModel.get(index).getId();
+
+            var res = age.split("\\/");
+
+            int day = Integer.parseInt(res[0]);
+            int month = Integer.parseInt(res[1]);
+            int year = Integer.parseInt(res[2]);
+
+            //generate year
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            for (int k = currentYear - 100; k <= currentYear; k++) {
+                if (year == k) {
+                    create.yearComboBox.setSelectedIndex(100 - (currentYear - year));
+                }
+            }
+
+            create.dayComboBox.setSelectedIndex(day - 1);
+            create.monthComboBox.setSelectedIndex(month - 1);
+
+            //create.dayComboBox.setSelectedIndex(index);
+            if (gender == "Féminin") {
+                create.femRadioButton.setSelected(true);
+            } else {
+                create.mascRadioButton.setSelected(true);
+            }
+
+            create.adressTextField.setText(adress);
+
+            create.saveButton.setText("Modifier");
+            
+
+        } else {
             System.out.println("Tableau vide");
         }
     }
 
-    public void lastInsertedPatient() {
-        int index = listPatientTable.getRowCount() - listPatientTable.getRowCount();
-        try {
-            showPatientSelected(index);
-        } catch (SQLException ex) {
-            Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
+    private void refreshAll() throws SQLException {
+        this.searchValueTextField.setText("");
+        this.numbersToShowComboBox.setSelectedIndex(7);
+        lastInsertedPatient();
+    }
+
+    private void updatePatientFolder() throws SQLException {
+        updatePatientFolderWindow();
+    }
+
+    private void takeAppointment() throws SQLException {
+        Appointment rdv = new Appointment();
+        JDesktopPane desktopPane = getDesktopPane();
+        desktopPane.add(rdv);
+
+        rdv.setVisible(true);
+        this.setVisible(false);
+
+        rdv.setBounds(0, 0, 580, 495);
+        rdv.searchPanel.setVisible(false);
+
+        PatientFolderDao patient = new PatientFolderDao();
+        List<PatientFolderModel> patientFolderModel = null;
+
+        if (value.equals("")) {
+            patientFolderModel = patient.selectAllPatientFolder();
+            //System.err.println(listPatientTable.getRowCount());
+
+        } else {
+            patientFolderModel = patient.selectPatientBySearch(value);
+            //System.err.println(listPatientTable.getRowCount());
         }
+
+        if (limit == null) {
+            //patientFolderModel = patient.selectAllPatientFolder();
+            //System.err.println(listPatientTable.getRowCount());
+        } else {
+            patientFolderModel = patient.selectWithLimitAndFilter(limit.toString());
+            //System.err.println(listPatientTable.getRowCount());
+        }
+
+//        int idPassing = patientFolderModel.get(index).getId();
+//        idPassToAppointment = Integer.toString(idPassing);
+        String first_name = patientFolderModel.get(index).getFirst_name();
+        String last_name = patientFolderModel.get(index).getLast_name();
+
+        // rdv.idPassedThrougthListPatient = this.idPassToAppointment;
+        rdv.idPatientFromListpatietnFolderLabel.setText(idPassToAppointment);
+        rdv.showFullnameLabel.setText(first_name + " " + last_name);
+        rdv.infoLabel.setText("Cliquez sur réinitialiser pour faire une nouvelle entrée de dossier patient!");
+        rdv.toFront();
+
     }
 
 }

@@ -5,8 +5,6 @@
  */
 package model;
 
-import java.util.List;
-
 /**
  *
  * @author bynan
@@ -19,13 +17,20 @@ public class DoctorModel extends UserModel {
         super(id, full_name, login, password, email, phone_number, role_id);
     }
 
-    public DoctorModel(String full_name, int id, String libel) {
+    public DoctorModel(String full_name, int id) {
         super(full_name, id);
-        this.libel = libel;
+    }
+    public DoctorModel(int id, int roleId, String fullName, String phoneNumber) {
+        super(id, roleId,fullName, phoneNumber); // ampitoviana ny eo @ parametre 
+    }
+    public DoctorModel(int id){
+        super(id);
     }
 
     public DoctorModel() {
     }
+
+    
 
     public String getLibel() {
         return libel;
@@ -37,7 +42,7 @@ public class DoctorModel extends UserModel {
 
     @Override
     public String toString() {
-        return this.getFull_name()+" ("+this.libel+")";
+        return this.getFull_name();
     }
 
 }

@@ -31,4 +31,19 @@ public class CrenelDao {
         }
         return crenelsOf;
     }
+    
+    public CrenelModel selectById(int idParam) throws SQLException{
+        CrenelModel crenModel = null;
+        String sql = "SELECT * FROM crenels WHERE id = "+idParam;
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs = accessBdd.executeSelect(sql);
+        while(rs.next()){
+            int id  = rs.getInt("id");
+            String libel = rs.getString("libel");
+            
+            crenModel = new CrenelModel(id, libel);
+        }
+        return crenModel;
+    }
 }

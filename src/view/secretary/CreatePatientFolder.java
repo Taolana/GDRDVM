@@ -6,7 +6,6 @@
 package view.secretary;
 
 import dao.PatientFolderDao;
-import java.awt.Component;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -14,10 +13,8 @@ import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import model.PatientFolderModel;
-import view.main.Application;
 
 /**
  *
@@ -28,6 +25,8 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
     /**
      * Creates new form CreatePatientFolder
      */
+    public static int idPatientFolder;
+
     public CreatePatientFolder() {
         initComponents();
         this.setVisible(true);
@@ -62,7 +61,7 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
         saveButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         listingButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -129,7 +128,7 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(resetButton)
                     .addComponent(saveButton)
@@ -200,7 +199,7 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel1.setText("Formulaire de création d'un dossier patient");
+        titleLabel.setText("Formulaire de création d'un dossier patient");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -209,7 +208,7 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
+                    .addComponent(titleLabel)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
@@ -217,7 +216,7 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(titleLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(15, Short.MAX_VALUE))
@@ -231,7 +230,18 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        save();
+        if (saveButton.getText().equals("Modifier")) {
+            try {
+                updatePatient();
+            } catch (SQLException ex) {
+                Logger.getLogger(CreatePatientFolder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (saveButton.getText().equals("Enregistrer")) {
+            save();
+        } else {
+            System.err.println("Boutton non operationnel");
+        }
+
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void listingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listingButtonActionPerformed
@@ -244,11 +254,10 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField adressTextField;
-    private javax.swing.JComboBox<String> dayComboBox;
-    private javax.swing.JRadioButton femRadioButton;
-    private javax.swing.JTextField firstNameTextField;
-    private javax.swing.JLabel jLabel1;
+    public javax.swing.JTextField adressTextField;
+    public javax.swing.JComboBox<String> dayComboBox;
+    public javax.swing.JRadioButton femRadioButton;
+    public javax.swing.JTextField firstNameTextField;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -256,13 +265,14 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField lastNameTextField;
+    public javax.swing.JTextField lastNameTextField;
     private javax.swing.JButton listingButton;
-    private javax.swing.JRadioButton mascRadioButton;
-    private javax.swing.JComboBox<String> monthComboBox;
+    public javax.swing.JRadioButton mascRadioButton;
+    public javax.swing.JComboBox<String> monthComboBox;
     private javax.swing.JButton resetButton;
-    private javax.swing.JButton saveButton;
-    private javax.swing.JComboBox<String> yearComboBox;
+    public javax.swing.JButton saveButton;
+    public javax.swing.JLabel titleLabel;
+    public javax.swing.JComboBox<String> yearComboBox;
     // End of variables declaration//GEN-END:variables
     private final ButtonGroup btnGrp = new ButtonGroup();
     private final DefaultComboBoxModel comboModelDayBirth = new DefaultComboBoxModel();
@@ -332,16 +342,21 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
         } else if (mascRadioButton.isSelected()) {
             gender = "Masculin";
         }
-        PatientFolderModel patientFolderModel = new PatientFolderModel();
-        patientFolderModel.setFirst_name(first_name);
-        patientFolderModel.setLast_name(last_name);
-        patientFolderModel.setGender(gender);
-        patientFolderModel.setBirth_date(dateOfBirth);
-        patientFolderModel.setAdress(adress);
-        PatientFolderDao patientFolderDao = new PatientFolderDao();
-        patientFolderDao.addPatientFolder(patientFolderModel);
-        reset();
-        JOptionPane.showMessageDialog(null, "Succès!");
+        if (first_name.isBlank() || last_name.isBlank() || adress.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Champs non remplis!", "Erreur!", JOptionPane.ERROR_MESSAGE);
+        } else {
+            PatientFolderModel patientFolderModel = new PatientFolderModel();
+            patientFolderModel.setFirst_name(first_name);
+            patientFolderModel.setLast_name(last_name);
+            patientFolderModel.setGender(gender);
+            patientFolderModel.setBirth_date(dateOfBirth);
+            patientFolderModel.setAdress(adress);
+            PatientFolderDao patientFolderDao = new PatientFolderDao();
+            patientFolderDao.addPatientFolder(patientFolderModel);
+            reset();
+            JOptionPane.showMessageDialog(null, "Succès!");
+
+        }
     }
 
     private void listing() throws SQLException {
@@ -349,5 +364,49 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
         JDesktopPane desktopPane = getDesktopPane();
         desktopPane.add(list);
         list.setVisible(true);
+        this.setVisible(false);
+        list.toFront();
+    }
+
+    private void updatePatient() throws SQLException {
+        String first_name = firstNameTextField.getText();
+        String last_name = lastNameTextField.getText();
+        var day = dayComboBox.getSelectedIndex() + 1;
+        var month = monthComboBox.getSelectedIndex() + 1;
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        var year = yearComboBox.getSelectedIndex() + currentYear - 100;
+        var dateOfBirth = day + "/" + month + "/" + year;
+        String adress = adressTextField.getText();
+        String gender = null;
+        if (femRadioButton.isSelected()) {
+            gender = "Féminin";
+        } else if (mascRadioButton.isSelected()) {
+            gender = "Masculin";
+        }
+        if (first_name.isBlank() || last_name.isBlank() || adress.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Champs non remplis!", "Erreur!", JOptionPane.ERROR_MESSAGE);
+        } else {
+            PatientFolderModel patientFolderModel = new PatientFolderModel();
+            patientFolderModel.setFirst_name(first_name);
+            patientFolderModel.setLast_name(last_name);
+            patientFolderModel.setGender(gender);
+            patientFolderModel.setBirth_date(dateOfBirth);
+            patientFolderModel.setAdress(adress);
+            patientFolderModel.setId(idPatientFolder);
+            System.err.println(idPatientFolder);
+            PatientFolderDao patientFolderDao = new PatientFolderDao();
+            patientFolderDao.updatePatientFolder(patientFolderModel);
+            reset();
+            JOptionPane.showMessageDialog(null, "Modification effectuee!");
+            this.setVisible(false);
+            // Show the list by default after inserting
+            ListPatientsFolder list = new ListPatientsFolder();
+            JDesktopPane desktopPane = getDesktopPane();
+            desktopPane.add(list);
+            list.setVisible(true);
+            list.selectPatientUpdated();
+           
+
+        }
     }
 }

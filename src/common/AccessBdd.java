@@ -33,9 +33,9 @@ public class AccessBdd {
     public void loadDriver() {
         try {
             Class.forName(driver);
-            System.out.println("Driver chargé");
+            //System.out.println("Driver chargé");
         } catch (ClassNotFoundException e) {
-            System.err.println("Driver non trouvé");
+            //System.err.println("Driver non trouvé");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,9 +45,9 @@ public class AccessBdd {
         if (conn == null) {
             try {
                 conn = DriverManager.getConnection(url, user, password);
-                System.out.println("Connexion établie");
+                //System.out.println("Connexion établie");
             } catch (SQLException e) {
-                System.err.println("Problème de connexion  : " + e.getMessage());
+                //System.err.println("Problème de connexion  : " + e.getMessage());
             }
         } else {
             try {
@@ -68,7 +68,7 @@ public class AccessBdd {
             if (resultSet == null) {
                 statement = getConnection().createStatement();
                 resultSet = statement.executeQuery(sql);
-                System.out.println("Sélection dans la base de données effectuée");
+                //System.out.println("Sélection dans la base de données effectuée");
                 return resultSet;
             } else {
                 return null;
@@ -84,7 +84,7 @@ public class AccessBdd {
         try {
             statement = getConnection().createStatement();
             statement.executeUpdate(sql);
-            System.out.println("Modification dans la base de données effectuée");
+            //System.out.println("Modification dans la base de données effectuée");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

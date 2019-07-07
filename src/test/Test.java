@@ -5,23 +5,21 @@
  */
 package test;
 
-import dao.CrenelDao;
-import dao.DoctorDao;
-import dao.MedicalFolderDao;
 import java.sql.SQLException;
-import java.util.List;
-import model.CrenelModel;
-import model.DoctorModel;
 
 /**
  *
  * @author bynan
  */
 public class Test {
-    public static void main (String[] args) throws SQLException{
-         MedicalFolderDao med = new MedicalFolderDao();
-         int a = med.selectNumberOfPatientsPerDoctor(9);
-         System.out.println(a);
+
+    public static void main(String[] args) throws SQLException {
+        String valeur = "1/12/2019";
+        var res = valeur.split("\\/");
+        
+        for(Object a : res){
+          System.err.println(a);  
+        }
 
     }
 }
