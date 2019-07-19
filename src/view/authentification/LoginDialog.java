@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import model.UserModel;
+import view.generalist.MedicalFolder;
 import view.main.Application;
 
 /**
@@ -219,6 +221,8 @@ public class LoginDialog extends javax.swing.JDialog {
     private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
  public Integer user = null;
+ public UserModel userFullName = null;
+ public Integer idMedical = null;
 
     private void authentification() {
         String login = loginTextField.getText();
@@ -230,6 +234,10 @@ public class LoginDialog extends javax.swing.JDialog {
             UserDao userDao = new UserDao();
             try {
                 user = userDao.userConnected(login, hashed);
+                userFullName = userDao.userConnectedFullInformation(login, hashed);
+                idMedical = userDao.userConnectedIdentifier(login, hashed);
+                MedicalFolder medicFolder = new MedicalFolder();
+                //medicFolder.
             } catch (SQLException ex) {
                 Logger.getLogger(LoginDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -240,7 +248,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         Application app = null;
                         app = new Application();
                         this.setVisible(false);
-                        app.userName.setText("Developper");
+                        app.userName.setText("Développeur: "+userFullName.getFull_name());
 
                         app.setVisible(true);
 
@@ -251,7 +259,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         Application appForSecretary = null;
                         appForSecretary = new Application();
                         this.setVisible(false);
-                        appForSecretary.userName.setText("Secretaire");
+                        appForSecretary.userName.setText("Sécretaire: "+userFullName.getFull_name());
                         appForSecretary.newMenu.getItem(2).setVisible(false); // Utilisateur
                         appForSecretary.folderMenu.getItem(1).setVisible(false); // Nouveau dossier médical
                         appForSecretary.setVisible(true);

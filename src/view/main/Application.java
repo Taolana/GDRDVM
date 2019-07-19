@@ -8,10 +8,12 @@ package view.main;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Box;
 import javax.swing.JOptionPane;
 import view.about.About;
 import view.administrator.NewUser;
 import view.authentification.LoginDialog;
+import view.generalist.MedicalFolder;
 import view.secretary.Appointment;
 import view.secretary.AppointmentLists;
 import view.secretary.Chart;
@@ -23,12 +25,14 @@ import view.secretary.ListPatientsFolder;
  * @author bynan
  */
 public class Application extends javax.swing.JFrame {
-
+    public static int idMedic;
     /**
      * Creates new form Application
      */
     public Application() {
         initComponents();
+        menuBar.add(Box.createGlue());
+        menuBar.add(userName);
     }
 
     /**
@@ -61,7 +65,6 @@ public class Application extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setExtendedState(MAXIMIZED_BOTH);
 
-        userName.setMnemonic('f');
         userName.setText("Nom du personnel connecté");
 
         logoutMenuItem.setMnemonic('a');
@@ -109,6 +112,11 @@ public class Application extends javax.swing.JFrame {
         folderMenu.add(patientMenuItem);
 
         medicalMenuItem.setText("Médical");
+        medicalMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                medicalMenuItemActionPerformed(evt);
+            }
+        });
         folderMenu.add(medicalMenuItem);
 
         newMenu.add(folderMenu);
@@ -236,6 +244,11 @@ public class Application extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void medicalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_medicalMenuItemActionPerformed
+        // TODO add your handling code here:
+        newPatientFolder();
+    }//GEN-LAST:event_medicalMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -297,6 +310,7 @@ public class Application extends javax.swing.JFrame {
     public ListPatientsFolder list_patient_folder;
     public NewUser newUser;
     public AppointmentLists appointList;
+    public MedicalFolder medicalFolder;
 
     /**
      * My own methods
@@ -376,5 +390,12 @@ public class Application extends javax.swing.JFrame {
         this.desktopPane.add(this.appointList);
         this.appointList.setVisible(true);
         this.appointList.toFront();
+    }
+
+    private void newPatientFolder() {
+        this.medicalFolder = new MedicalFolder();
+        this.desktopPane.add(this.medicalFolder);
+        this.medicalFolder.setVisible(true);
+        this.medicalFolder.toFront();
     }
 }

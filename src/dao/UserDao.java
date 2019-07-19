@@ -7,9 +7,6 @@ package dao;
 
 import common.AccessBdd;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import model.DoctorModel;
 import model.UserModel;
 
 /**
@@ -18,6 +15,21 @@ import model.UserModel;
  */
 public class UserDao {
     public Integer role_id = null;
+    public Integer id = null;
+    
+    public UserModel userConnectedFullInformation(String login, String password) throws SQLException{
+        UserModel user = null;
+        String sql = "SELECT * FROM users WHERE login ='"+login+"' AND password = '"+password+"'";
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs = accessBdd.executeSelect(sql);
+        while (rs.next()) {
+            int id = Integer.parseInt(rs.getString("id"));
+            String full_name = rs.getString("full_name");
+            user = new UserModel(full_name, id);
+        }
+        return user;
+    }
     
     public Integer userConnected(String login, String password) throws SQLException{
         String sql = "SELECT * FROM users WHERE login ='"+login+"' AND password = '"+password+"'";
@@ -29,6 +41,21 @@ public class UserDao {
        }
         if(role_id != null){
             return role_id;
+        }else{
+            return null;
+        }    
+    }
+    
+    public Integer userConnectedIdentifier(String login, String password) throws SQLException{
+        String sql = "SELECT * FROM users WHERE login ='"+login+"' AND password = '"+password+"'";
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs = accessBdd.executeSelect(sql);
+        while (rs.next()){
+           id = rs.getInt("id");         
+       }
+        if(id != null){
+            return id;
         }else{
             return null;
         }    

@@ -562,7 +562,7 @@ public class Appointment extends javax.swing.JInternalFrame {
             java.util.Date date = calendar.getTime();
             String formattedDate = new SimpleDateFormat("EEEE, d MMM yyyy").format(date);
             combModelDate.addElement(formattedDate);
-            calendar.add(Calendar.DATE, 1);
+            calendar.add(Calendar.DATE, i);
         }
         dateComboBox.setModel(combModelDate);
 
