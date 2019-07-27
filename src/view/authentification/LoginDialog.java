@@ -249,6 +249,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         app = new Application();
                         this.setVisible(false);
                         app.userName.setText("Développeur: "+userFullName.getFull_name());
+                        app.idMedic = userFullName.getId();
 
                         app.setVisible(true);
 
@@ -264,6 +265,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         appForSecretary.folderMenu.getItem(1).setVisible(false); // Nouveau dossier médical
                         appForSecretary.setVisible(true);
                         appForSecretary.initChart();
+                        appForSecretary.idMedic = userFullName.getId();
                         break;
 
                     case 3:
@@ -273,12 +275,13 @@ public class LoginDialog extends javax.swing.JDialog {
                         appForGeneralist = new Application();
                         this.setVisible(false);
                         appForGeneralist.setVisible(true);
-                        appForGeneralist.userName.setText("Généraliste");
+                        appForGeneralist.userName.setText("Généraliste: "+userFullName.getFull_name());
                         appForGeneralist.newMenu.getItem(0).setVisible(false);
                         appForGeneralist.newMenu.getItem(2).setVisible(false);
                         appForGeneralist.folderMenu.getItem(0).setVisible(false);
                         appForGeneralist.viewMenu.getItem(0).setVisible(false);
                         appForGeneralist.viewMenu.getItem(1).setVisible(false); // Rendez-vous
+                        appForGeneralist.idMedic = userFullName.getId();
                         break;
                     default:
                         break;

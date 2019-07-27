@@ -245,8 +245,12 @@ public class Application extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void medicalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_medicalMenuItemActionPerformed
-        // TODO add your handling code here:
-        newPatientFolder();
+        try {
+            // TODO add your handling code here:
+            newPatientFolder();
+        } catch (SQLException ex) {
+            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_medicalMenuItemActionPerformed
 
     /**
@@ -392,7 +396,7 @@ public class Application extends javax.swing.JFrame {
         this.appointList.toFront();
     }
 
-    private void newPatientFolder() {
+    private void newPatientFolder() throws SQLException {
         this.medicalFolder = new MedicalFolder();
         this.desktopPane.add(this.medicalFolder);
         this.medicalFolder.setVisible(true);

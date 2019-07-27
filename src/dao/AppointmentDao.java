@@ -16,6 +16,28 @@ import model.AppointmentModel;
  * @author bynan
  */
 public class AppointmentDao {
+    
+    public AppointmentModel findById(int idParam) throws SQLException {
+        AppointmentModel appointModel = null;
+        String sql = "SELECT * FROM `appointments` WHERE `id` = " + idParam;
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs = accessBdd.executeSelect(sql);
+        while (rs.next()) {
+            int id = Integer.parseInt(rs.getString("id"));
+            int medics_id = Integer.parseInt(rs.getString("medic_id"));
+            int crenel_id = Integer.parseInt(rs.getString("crenel_id"));
+            int patient_folder_id = Integer.parseInt(rs.getString("patient_folder_id"));
+            String date = rs.getString("date");
+            java.sql.Timestamp timestamp = rs.getTimestamp("timestamp");
+            java.sql.Timestamp updated_at = rs.getTimestamp("updated_at");
+
+            appointModel = new AppointmentModel(id, medics_id, crenel_id, patient_folder_id, date, timestamp, updated_at);
+        }
+        return appointModel;
+    }
+    
+    
 //     public void insertTim(Rdz objet) {
 //        try {
 //            Connection cnx = bdd.seConnecter();
@@ -101,6 +123,35 @@ public class AppointmentDao {
     public List<AppointmentModel> selectAllAppointment() throws SQLException {
         List appList = new ArrayList();
         String sql = "SELECT * FROM appointments";
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs = accessBdd.executeSelect(sql);
+        while (rs.next()) {
+
+            int id = Integer.parseInt(rs.getString("id"));
+            int medic_id = Integer.parseInt(rs.getString("medic_id"));
+            int crenel_id = Integer.parseInt(rs.getString("crenel_id"));
+            int patient_folder_id = Integer.parseInt(rs.getString("patient_folder_id"));
+            String date = rs.getString("date");
+            java.sql.Timestamp timestamp = rs.getTimestamp("timestamp");
+
+            AppointmentModel apMdl = new AppointmentModel(id, patient_folder_id, medic_id, id, date, timestamp);
+            
+            apMdl.setMedic_id(id);
+            apMdl.setCrenel_id(crenel_id);
+            apMdl.setDate(date);
+            apMdl.setMedic_id(medic_id);
+            apMdl.setPatient_folder_id(patient_folder_id);
+            apMdl.setTimestamp(timestamp);
+            
+            appList.add(apMdl);
+        }
+        return appList;
+    }
+    
+    public List<AppointmentModel> selectAllAppointmentByMedicIdAndIdAppointment(String filter, int idAppoint) throws SQLException {
+        List appList = new ArrayList();
+        String sql = "SELECT * FROM appointments where medic_id ="+filter+" and id = "+idAppoint;
         AccessBdd accessBdd = new AccessBdd();
         accessBdd.loadDriver();
         var rs = accessBdd.executeSelect(sql);

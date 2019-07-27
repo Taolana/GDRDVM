@@ -10,15 +10,65 @@ package model;
  * @author bynan
  */
 public class MedicalFolderModel {
+
     private int id;
     private int medics_id;
     private int patient_folder_id;
-    private String length;
-    private String weight;
+    private Double length;
+    private Double weight;
     private String allergy;
     private String antecedent;
     private String unallowed_indications;
     private String vaccine;
+    private String updated_at;
+
+    public MedicalFolderModel(int id, int medics_id, int patient_folder_id, Double length, Double weight, String allergy, String antecedent, String unallowed_indications, String vaccine, String updated_at) {
+        this.id = id;
+        this.medics_id = medics_id;
+        this.patient_folder_id = patient_folder_id;
+        this.length = length;
+        this.weight = weight;
+        this.allergy = allergy;
+        this.antecedent = antecedent;
+        this.unallowed_indications = unallowed_indications;
+        this.vaccine = vaccine;
+        this.updated_at = updated_at;
+    }
+
+    public MedicalFolderModel(int id, Double length, Double weight, String allergy, String antecedent, String unallowed_indications, String vaccine, String updated_at) {
+        this.id = id;
+        this.length = length;
+        this.weight = weight;
+        this.allergy = allergy;
+        this.antecedent = antecedent;
+        this.unallowed_indications = unallowed_indications;
+        this.vaccine = vaccine;
+        this.updated_at = updated_at;
+    }
+
+    
+    
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+    
+    
+
+    public MedicalFolderModel(int id, int medics_id, int patient_folder_id, Double length, Double weight, String allergy, String antecedent, String unallowed_indications, String vaccine) {
+        this.id = id;
+        this.medics_id = medics_id;
+        this.patient_folder_id = patient_folder_id;
+        this.length = length;
+        this.weight = weight;
+        this.allergy = allergy;
+        this.antecedent = antecedent;
+        this.unallowed_indications = unallowed_indications;
+        this.vaccine = vaccine;
+    }
 
     public int getId() {
         return id;
@@ -36,11 +86,6 @@ public class MedicalFolderModel {
         this.medics_id = medics_id;
     }
 
-    @Override
-    public String toString() {
-        return "MedicalFolderModel{" + "length=" + length + ", weight=" + weight + ", allergy=" + allergy + ", antecedent=" + antecedent + ", unallowed_indications=" + unallowed_indications + ", vaccine=" + vaccine + '}';
-    }
-  
     public int getPatient_folder_id() {
         return patient_folder_id;
     }
@@ -49,19 +94,19 @@ public class MedicalFolderModel {
         this.patient_folder_id = patient_folder_id;
     }
 
-    public String getLength() {
+    public Double getLength() {
         return length;
     }
 
-    public void setLength(String length) {
+    public void setLength(Double length) {
         this.length = length;
     }
 
-    public String getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(String weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
@@ -96,6 +141,9 @@ public class MedicalFolderModel {
     public void setVaccine(String vaccine) {
         this.vaccine = vaccine;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "MedicalFolderModel{" + "length=" + length + ", weight=" + weight + ", allergy=" + allergy + ", antecedent=" + antecedent + ", unallowed_indications=" + unallowed_indications + ", vaccine=" + vaccine + '}';
+    }
 }

@@ -17,8 +17,31 @@ public class AppointmentModel {
     private int medic_id;
     private int crenel_id;
     private int patient_folder_id;
-    private Timestamp timestamp;
     private String date;
+    private Timestamp timestamp;
+    private Timestamp updated_at;
+    
+
+    public Timestamp getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Timestamp updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    
+    public AppointmentModel(int id, int medic_id, int crenel_id, int patient_folder_id, String date, Timestamp timestamp, Timestamp updated_at) {
+        this.id = id;
+        this.medic_id = medic_id;
+        this.crenel_id = crenel_id;
+        this.patient_folder_id = patient_folder_id;
+        this.timestamp = timestamp;
+        this.updated_at = updated_at;
+        this.date = date;
+    }
+    
+    
 
     public AppointmentModel(int id,int idpatientfolder, int idmedics, int idcreno, String date, Timestamp ts) {
         this.id = id;
