@@ -144,6 +144,31 @@ public class PatientFolderDao {
         }
         return pfModel;
     }
+    /**
+     * id not null
+     * @param idParam
+     * @return
+     * @throws SQLException 
+     */
+    public PatientFolderModel findById(int idParam) throws SQLException {
+        PatientFolderModel pfModel = null;
+        String sql = "SELECT * FROM patient_folder WHERE user_id != 0 and id = " + idParam;
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs = accessBdd.executeSelect(sql);
+        while (rs.next()) {
+            int id = Integer.parseInt(rs.getString("id"));
+            String first_name = rs.getString("first_name");
+            String last_name = rs.getString("last_name");
+            String gender = rs.getString("gender");
+            String age = rs.getString("birth_date");
+            String adress = rs.getString("adress");
+
+            pfModel = new PatientFolderModel(id, first_name, last_name, gender, age, adress);
+        }
+        return pfModel;
+    }
+    
     public PatientFolderModel findByIdOnAppointment(int idParam) throws SQLException {
         PatientFolderModel pfModel = null;
         String sql = "SELECT * FROM patient_folder WHERE user_id >= 0 and id = " + idParam;
@@ -162,5 +187,8 @@ public class PatientFolderDao {
         }
         return pfModel;
     }
+    
+    
+    
 
 }

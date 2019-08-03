@@ -8,21 +8,30 @@ package view.generalist;
 import dao.AppointmentDao;
 import dao.CrenelDao;
 import dao.MedicalFolderDao;
+import dao.OrdersDao;
 import dao.PatientFolderDao;
+import extrapackages.AgeCalculator;
 import java.awt.event.ItemEvent;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.AgeModel;
 import model.AppointmentModel;
+import model.ComposeOrderJointureModel;
 import model.CrenelModel;
 import model.MedicalFolderModel;
+import model.OrdersModel;
 import model.PatientFolderModel;
 import view.main.Application;
 
@@ -38,6 +47,9 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     public MedicalFolder() throws SQLException {
         initComponents();
         initListOfFolder();
+        this.composeOrderButton.setEnabled(false);
+        this.ordonnancesTable.setVisible(false);
+        
     }
 
     /**
@@ -75,7 +87,7 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         editToggleButton = new javax.swing.JToggleButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        ordonnancesTable = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
@@ -87,10 +99,13 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         crenel = new javax.swing.JTextField();
         rdvDate = new javax.swing.JTextField();
         priseRdvDate = new javax.swing.JTextField();
+        composeOrderButton = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        consulteRadioButton = new javax.swing.JRadioButton();
+        nonConsulteRadioButton = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         datesComboBox = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
@@ -99,7 +114,10 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
         setTitle("Dossiers Patients et Médicales");
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Dossiers n° :"));
 
@@ -118,8 +136,12 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 429, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 15, Short.MAX_VALUE))
         );
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 76, -1, -1));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Modifier le dossier médicale"));
 
@@ -206,11 +228,9 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
                             .addComponent(tailleTextField))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel6)
                             .addComponent(jLabel5))
-                        .addGap(148, 148, 148)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(editToggleButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
@@ -261,9 +281,11 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
                 .addGap(48, 48, 48))
         );
 
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(146, 76, -1, 540));
+
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Historique du patient"));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        ordonnancesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -274,7 +296,7 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane6.setViewportView(jTable1);
+        jScrollPane6.setViewportView(ordonnancesTable);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -304,25 +326,24 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(rdvDate, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(crenel, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(rdvDate, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(priseRdvDate, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(updatedAt, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -354,12 +375,20 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton2.setText("Rédiger une ordonnance");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        composeOrderButton.setText("Rédiger une ordonnance");
+        composeOrderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                composeOrderButtonActionPerformed(evt);
             }
         });
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/ic_print_black_18dp.png"))); // NOI18N
+        jButton2.setText("Imprimer");
+
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/ic_picture_as_pdf_black_18dp.png"))); // NOI18N
+        jButton3.setText("Sauver en format PDF");
+
+        jButton4.setText("Aperçu");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -368,43 +397,53 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addGap(30, 30, 30))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane6)
-                        .addContainerGap())))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(composeOrderButton))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(8, 8, 8)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(composeOrderButton)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(679, 76, -1, -1));
 
         jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jRadioButton1.setText("Consulté");
+        consulteRadioButton.setText("Consulté");
+        consulteRadioButton.setEnabled(false);
 
-        jRadioButton2.setText("Non consulté");
+        nonConsulteRadioButton.setText("Non consulté");
+        nonConsulteRadioButton.setEnabled(false);
 
         jLabel1.setText("Patient du :");
         jLabel1.setToolTipText("");
 
         datesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        datesComboBox.setEnabled(false);
 
         jLabel15.setText("Créneau :");
 
         creneauComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        creneauComboBox.setEnabled(false);
 
         editFiltresToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/ic_edit_black_18dp.png"))); // NOI18N
         editFiltresToggleButton.addItemListener(new java.awt.event.ItemListener() {
@@ -426,9 +465,9 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(editFiltresToggleButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton1)
+                .addComponent(consulteRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton2)
+                .addComponent(nonConsulteRadioButton)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -444,8 +483,8 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)
+                    .addComponent(consulteRadioButton)
+                    .addComponent(nonConsulteRadioButton)
                     .addComponent(jLabel1)
                     .addComponent(datesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -457,54 +496,33 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 798, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(50, 50, 50))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 32, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 12, 798, -1));
 
-        setSize(new java.awt.Dimension(1304, 657));
+        setSize(new java.awt.Dimension(1332, 657));
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void composeOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_composeOrderButtonActionPerformed
+        try {
+            try {
+                // TODO add your handling code here:
+                ordonnanceView();
+            } catch (ParseException ex) {
+                Logger.getLogger(MedicalFolder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MedicalFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_composeOrderButtonActionPerformed
 
     private void folderListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folderListMouseClicked
 
         try {
             showPatientAppointment(Integer.parseInt(folderList.getSelectedValue()));
+            this.composeOrderButton.setEnabled(true);
         } catch (SQLException ex) {
             Logger.getLogger(MedicalFolder.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }//GEN-LAST:event_folderListMouseClicked
 
     private void editToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editToggleButtonActionPerformed
@@ -543,17 +561,31 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void editFiltresToggleButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_editFiltresToggleButtonItemStateChanged
-        // TODO add your handling code here:
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            this.consulteRadioButton.setEnabled(true);
+            this.nonConsulteRadioButton.setEnabled(true);
+            this.datesComboBox.setEnabled(true);
+            this.creneauComboBox.setEnabled(true);
+            initBtnGroup();
+        } else if (evt.getStateChange() == ItemEvent.DESELECTED) {
+            this.consulteRadioButton.setEnabled(false);
+            this.nonConsulteRadioButton.setEnabled(false);
+            this.datesComboBox.setEnabled(false);
+            this.creneauComboBox.setEnabled(false);
+        }
     }//GEN-LAST:event_editFiltresToggleButtonItemStateChanged
 
     private void editFiltresToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editFiltresToggleButtonActionPerformed
-        // TODO add your handling code here:
+
+
     }//GEN-LAST:event_editFiltresToggleButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea allergiesTextArea;
     private javax.swing.JTextArea antecedentsTextArea;
+    private javax.swing.JButton composeOrderButton;
+    private javax.swing.JRadioButton consulteRadioButton;
     private javax.swing.JTextArea contreIndicationsTextArea;
     private javax.swing.JComboBox<String> creneauComboBox;
     private javax.swing.JTextField crenel;
@@ -563,6 +595,8 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     private javax.swing.JList<String> folderList;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -583,16 +617,15 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField name;
+    private javax.swing.JRadioButton nonConsulteRadioButton;
+    private javax.swing.JTable ordonnancesTable;
     private javax.swing.JTextField poidsTextField;
     private javax.swing.JTextField priseRdvDate;
     private javax.swing.JTextField rdvDate;
@@ -602,8 +635,47 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     // End of variables declaration//GEN-END:variables
     private final DefaultListModel listModel = new DefaultListModel();
     public static int idPatientFolder;
+    private final ButtonGroup btnGrp = new ButtonGroup();
     private final DefaultComboBoxModel combModel = new DefaultComboBoxModel();
     private final DefaultComboBoxModel combModel1 = new DefaultComboBoxModel();
+    public static int ordonnance_id;
+
+    private void initTable() throws SQLException {
+        String[] columnNames = {"Ordonnance", "Date et heure"};
+
+        DefaultTableModel tbMdl = new DefaultTableModel(columnNames, 0);
+
+        tbMdl.setColumnCount(2);
+
+        List<ComposeOrderJointureModel> c = null;
+        
+        MedicalFolderDao medicalFDao = new MedicalFolderDao();
+        Application app = new Application();
+        Integer id = app.idMedic;
+
+        MedicalFolderModel medicFolderModel = medicalFDao.selectByIdMedicAndIdPatientFolder(this.idPatientFolder, id);
+        MedicalFolderModel medicFolderModel2 = medicalFDao.selectById(medicFolderModel.getId());
+        
+        
+        OrdersDao o = new OrdersDao();
+        c = o.selectByMedicFolderID(medicFolderModel2.getId());
+
+        for (ComposeOrderJointureModel p : c) {
+
+            tbMdl.addRow(new Object[]{
+                p.getOrder_id(),
+                p.getTs()
+            });
+        }
+
+        ordonnancesTable.setModel(tbMdl);
+        this.ordonnancesTable.setVisible(true);
+    }
+
+    private void initBtnGroup() {
+        btnGrp.add(consulteRadioButton);
+        btnGrp.add(nonConsulteRadioButton);
+    }
 
     public void initListOfFolder() throws SQLException {
 
@@ -656,11 +728,10 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
             this.crenel.setText(crenels.getLibel());
             this.rdvDate.setText(appoint.getDate());
             this.priseRdvDate.setText(appoint.getTimestamp().toString());
-            if (appoint.getUpdated_at() != null) {
-                this.updatedAt.setText(appoint.getUpdated_at().toString());
-            }
+
             this.idPatientFolder = patient.getId();
             showMedicalFolder();
+            initTable();
         }
     }
 
@@ -679,6 +750,9 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         this.antecedentsTextArea.setText(medicFolderModel2.getAntecedent());
         this.contreIndicationsTextArea.setText(medicFolderModel2.getUnallowed_indications());
         this.vaccinsTextArea.setText(medicFolderModel2.getVaccine());
+        if (medicFolderModel2.getUpdated_at() != null) {
+            this.updatedAt.setText(medicFolderModel2.getUpdated_at());
+        }
     }
 
     private void saveButton() throws SQLException {
@@ -703,6 +777,75 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
 
         medicalFolderDao.updateMedicalFolder(medicalFolderModel);
         JOptionPane.showMessageDialog(null, "Succès!");
+        this.updatedAt.setText(timestamp);
         this.editToggleButton.setSelected(false);
     }
+
+    private int getMedicalFolderId() throws SQLException {
+        int id = 0;
+        MedicalFolderDao medicalFolderDao = new MedicalFolderDao();
+        Application app = new Application();
+        Integer identifiant = app.idMedic;
+
+        MedicalFolderModel medicFolderModel = medicalFolderDao.selectByIdMedicAndIdPatientFolder(this.idPatientFolder, identifiant);
+        MedicalFolderModel medicFolderModel2 = medicalFolderDao.selectById(medicFolderModel.getId());
+        id = medicFolderModel2.getId();
+        return id;
+    }
+
+    private void addOrder() throws SQLException {
+        OrdersModel orderModel = new OrdersModel();
+        orderModel.setDoctor_order("");
+        OrdersDao orderDao = new OrdersDao();
+        orderDao.insertOrder(orderModel);
+
+        ordonnance_id = orderDao.insertOrder(orderModel);
+
+        Application app = new Application();
+        int id_user = app.idMedic;
+
+        Date datetime = new Date();
+        String timestamp = new SimpleDateFormat("yyy-MM-dd hh:mm:ss").format(datetime);
+
+        ComposeOrderJointureModel c = new ComposeOrderJointureModel(id_user, ordonnance_id, getMedicalFolderId(), timestamp);
+
+        orderDao.insertJointureComposeOrder(c);
+    }
+
+    private void ordonnanceView() throws SQLException, ParseException {
+
+        try {
+            addOrder();
+            OrdersDao orderDao = new OrdersDao();
+            ComposeOrderJointureModel ww = orderDao.selectByIdOrder(ordonnance_id);
+
+            MedicalFolderDao medicalFolderDao = new MedicalFolderDao();
+
+            MedicalFolderModel medicalFolderModel = medicalFolderDao.selectById(ww.getMedical_folder_id());
+
+            PatientFolderDao patientFolderDao = new PatientFolderDao();
+
+            PatientFolderModel patientFolderModel = patientFolderDao.findById(medicalFolderModel.getPatient_folder_id());
+
+            ComposeOrder order = new ComposeOrder();
+
+            String age = patientFolderModel.getBirth_date();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date birthDate = (Date) sdf.parse(age);
+            AgeCalculator ageFoo = new AgeCalculator();
+            AgeModel ageExact = ageFoo.calculateAge(birthDate);
+            String ageExactString = ageExact.toString();
+
+            JDesktopPane desktopPane = getDesktopPane();
+            desktopPane.add(order);
+            order.setVisible(true);
+            order.infoOrderTextPane.setText("Date : " + ww.getTs() + "\n" + patientFolderModel.getFirst_name() + " "
+                    + patientFolderModel.getLast_name() + " ("
+                    + patientFolderModel.getGender() + ")\nAge : " + ageExactString);
+            order.toFront();
+        } catch (SQLException ex) {
+            Logger.getLogger(MedicalFolder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

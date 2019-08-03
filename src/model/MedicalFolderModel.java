@@ -144,6 +144,8 @@ public class MedicalFolderModel {
 
     @Override
     public String toString() {
-        return "MedicalFolderModel{" + "length=" + length + ", weight=" + weight + ", allergy=" + allergy + ", antecedent=" + antecedent + ", unallowed_indications=" + unallowed_indications + ", vaccine=" + vaccine + '}';
+        return "MedicalFolderModel{" + "id=" + id + ", medics_id=" + medics_id + ", patient_folder_id=" + patient_folder_id + ", length=" + length + ", weight=" + weight + ", allergy=" + allergy + ", antecedent=" + antecedent + ", unallowed_indications=" + unallowed_indications + ", vaccine=" + vaccine + ", updated_at=" + updated_at + '}';
     }
+
+    
 }

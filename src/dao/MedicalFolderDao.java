@@ -67,8 +67,9 @@ public class MedicalFolderDao {
             String antecedent = rs.getString("antecedent");
             String unallowed_indications = rs.getString("unallowed_indicators");
             String vaccine = rs.getString("vaccine");
+            String updated_at = rs.getString("updated_at");
 
-            mfModel = new MedicalFolderModel(id, medics_id, patient_folder_id, length, weight, allergy, antecedent, unallowed_indications, vaccine);
+            mfModel = new MedicalFolderModel(id, medics_id, patient_folder_id, length, weight, allergy, antecedent, unallowed_indications, vaccine, updated_at);
         }
         return mfModel;
     }
@@ -89,8 +90,9 @@ public class MedicalFolderDao {
             String antecedent = rs.getString("antecedent");
             String unallowed_indications = rs.getString("unallowed_indicators");
             String vaccine = rs.getString("vaccine");
+            String updated_at = rs.getString("updated_at");
 
-            mfModel = new MedicalFolderModel(id, medics_id, patient_folder_id, length, weight, allergy, antecedent, unallowed_indications, vaccine);
+            mfModel = new MedicalFolderModel(id, medics_id, patient_folder_id, length, weight, allergy, antecedent, unallowed_indications, vaccine, updated_at);
         }
         return mfModel;
     }
@@ -111,8 +113,9 @@ public class MedicalFolderDao {
             String antecedent = rs.getString("antecedent");
             String unallowed_indications = rs.getString("unallowed_indicators");
             String vaccine = rs.getString("vaccine");
+            String updated_at = rs.getString("updated_at");
 
-            mfModel = new MedicalFolderModel(id, medics_id, patient_folder_id, length, weight, allergy, antecedent, unallowed_indications, vaccine);
+            mfModel = new MedicalFolderModel(id, medics_id, patient_folder_id, length, weight, allergy, antecedent, unallowed_indications, vaccine,updated_at);
         }
         return mfModel;
     }
