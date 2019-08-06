@@ -393,7 +393,7 @@ public class CreatePatientFolder extends javax.swing.JInternalFrame {
             patientFolderModel.setBirth_date(dateOfBirth);
             patientFolderModel.setAdress(adress);
             patientFolderModel.setId(idPatientFolder);
-            System.err.println(idPatientFolder);
+            //System.err.println(idPatientFolder);
             PatientFolderDao patientFolderDao = new PatientFolderDao();
             patientFolderDao.updatePatientFolder(patientFolderModel);
             reset();

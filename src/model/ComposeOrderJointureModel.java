@@ -14,25 +14,39 @@ public class ComposeOrderJointureModel {
     private int user_id;
     private int order_id;
     private int medical_folder_id;
+    private int appointment_id;
     private String ts;
 
     public ComposeOrderJointureModel() {
     }
 
-    public ComposeOrderJointureModel(int id, int user_id, int order_id, int medical_folder_id, String ts) {
+    public ComposeOrderJointureModel( int user_id, int order_id, int medical_folder_id, int appointment_id, String ts) {
+       
+        this.user_id = user_id;
+        this.order_id = order_id;
+        this.medical_folder_id = medical_folder_id;
+        this.appointment_id = appointment_id;
+        this.ts = ts;
+    }
+
+    public int getAppointment_id() {
+        return appointment_id;
+    }
+
+    public void setAppointment_id(int appointment_id) {
+        this.appointment_id = appointment_id;
+    }
+
+    public ComposeOrderJointureModel(int id, int user_id, int order_id, int medical_folder_id, int appointment_id, String ts) {
         this.id = id;
         this.user_id = user_id;
         this.order_id = order_id;
         this.medical_folder_id = medical_folder_id;
+        this.appointment_id = appointment_id;
         this.ts = ts;
     }
 
-    public ComposeOrderJointureModel(int user_id, int order_id, int medical_folder_id, String ts) {
-        this.user_id = user_id;
-        this.order_id = order_id;
-        this.medical_folder_id = medical_folder_id;
-        this.ts = ts;
-    }
+
 
     public int getId() {
         return id;
@@ -72,6 +86,11 @@ public class ComposeOrderJointureModel {
 
     public void setTs(String ts) {
         this.ts = ts;
+    }
+
+    @Override
+    public String toString() {
+        return "ComposeOrderJointureModel{" + "id=" + id + ", user_id=" + user_id + ", order_id=" + order_id + ", medical_folder_id=" + medical_folder_id + ", appointment_id=" + appointment_id + ", ts=" + ts + '}';
     }
     
 }

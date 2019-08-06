@@ -57,6 +57,8 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
         jButton1 = new javax.swing.JButton();
         namesComboBox = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         appointmentTable = new javax.swing.JTable();
@@ -110,6 +112,10 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel4.setText("Date");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -118,13 +124,17 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(specialitiesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(63, 63, 63)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 424, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -139,7 +149,9 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
                         .addComponent(specialitiesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2)
                         .addComponent(jButton1)
-                        .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -207,13 +219,13 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_specialitiesComboBoxMouseClicked
 
     private void specialitiesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_specialitiesComboBoxActionPerformed
-        try {
-            RoleModel docMods = (RoleModel) specialitiesComboBox.getSelectedItem();
-            this.keyOf = docMods.getIdRole();
+        RoleModel docMods = (RoleModel) specialitiesComboBox.getSelectedItem();
+        this.keyOf = docMods.getIdRole();
 
+        try {
             DoctorDao mdcNameDao = new DoctorDao();
             List<DoctorModel> listMdcNames = mdcNameDao.medicsByKey(keyOf);
-
+            //comboModelNames.removeAllElements();
             for (Object m : listMdcNames) {
                 DoctorModel mdc = (DoctorModel) m;
                 comboModelNames.addElement(mdc);
@@ -221,14 +233,16 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
 
             DoctorDao numberDao = new DoctorDao();
             int nbr = numberDao.countMedics(keyOf);
-            int sizeOfDropdown = comboModelNames.getSize();
+            
+                int sizeOfDropdown = comboModelNames.getSize();
 
-            if (sizeOfDropdown != nbr) {
-                int toDelete = sizeOfDropdown - nbr;
-                for (int j = 0; j < toDelete; j++) {
-                    comboModelNames.removeElementAt(j);
+                if (sizeOfDropdown != nbr) {
+                    int toDelete = sizeOfDropdown - nbr;
+                    for (int j = 0; j < toDelete; j++) {
+                        comboModelNames.removeElementAt(j);
+                    }
                 }
-            }
+            
             this.namesComboBox.setModel(comboModelNames);
             namesComboBox.setEnabled(true);
 
@@ -269,9 +283,11 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable appointmentTable;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -325,7 +341,8 @@ public class AppointmentLists extends javax.swing.JInternalFrame {
 
     private void initComboLists() throws SQLException {
         RoleDao mdcDao = new RoleDao();
-        List<RoleModel> listMdc = mdcDao.selectRole();
+        List<RoleModel> listMdc = mdcDao.selectRoleMedicaleOnly();
+        combModelMdcSpeciality.removeAllElements();
         for (Object m : listMdc) {
             RoleModel mdc = (RoleModel) m;
             combModelMdcSpeciality.addElement(mdc);

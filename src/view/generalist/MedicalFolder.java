@@ -41,6 +41,8 @@ import view.main.Application;
  */
 public class MedicalFolder extends javax.swing.JInternalFrame {
 
+    private int id_apointment;
+
     /**
      * Creates new form MedicalFolder
      */
@@ -48,8 +50,8 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         initComponents();
         initListOfFolder();
         this.composeOrderButton.setEnabled(false);
-        this.ordonnancesTable.setVisible(false);
-        
+        initVoidTable();
+
     }
 
     /**
@@ -640,23 +642,34 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     private final DefaultComboBoxModel combModel1 = new DefaultComboBoxModel();
     public static int ordonnance_id;
 
-    private void initTable() throws SQLException {
-        String[] columnNames = {"Ordonnance", "Date et heure"};
+    private void initVoidTable() {
+        String[] columnNames = {"Ordonnance n°", "Date et heure"};
+
+        DefaultTableModel tbMdl = new DefaultTableModel(columnNames, 0);
+
+        tbMdl.setColumnCount(2);
+        tbMdl.addRow(new Object[]{
+            "", ""
+        });
+        ordonnancesTable.setModel(tbMdl);
+    }
+
+    void initTable() throws SQLException {
+        String[] columnNames = {"Ordonnance n°", "Date et heure"};
 
         DefaultTableModel tbMdl = new DefaultTableModel(columnNames, 0);
 
         tbMdl.setColumnCount(2);
 
         List<ComposeOrderJointureModel> c = null;
-        
+
         MedicalFolderDao medicalFDao = new MedicalFolderDao();
         Application app = new Application();
         Integer id = app.idMedic;
 
         MedicalFolderModel medicFolderModel = medicalFDao.selectByIdMedicAndIdPatientFolder(this.idPatientFolder, id);
         MedicalFolderModel medicFolderModel2 = medicalFDao.selectById(medicFolderModel.getId());
-        
-        
+
         OrdersDao o = new OrdersDao();
         c = o.selectByMedicFolderID(medicFolderModel2.getId());
 
@@ -719,7 +732,7 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
 
         for (AppointmentModel m : listAppointment) {
             AppointmentModel apppp = (AppointmentModel) m;
-
+            this.id_apointment = m.getId();
             PatientFolderModel patient = pflDao.findByIdOnAppointment(m.getPatient_folder_id());
             CrenelModel crenels = crenelDao.selectById(m.getCrenel_id());
             AppointmentModel appoint = appointDao.findById(m.getId());
@@ -793,7 +806,7 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         return id;
     }
 
-    private void addOrder() throws SQLException {
+    private void addOrder(int id_ordonn) throws SQLException {
         OrdersModel orderModel = new OrdersModel();
         orderModel.setDoctor_order("");
         OrdersDao orderDao = new OrdersDao();
@@ -807,7 +820,7 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
         Date datetime = new Date();
         String timestamp = new SimpleDateFormat("yyy-MM-dd hh:mm:ss").format(datetime);
 
-        ComposeOrderJointureModel c = new ComposeOrderJointureModel(id_user, ordonnance_id, getMedicalFolderId(), timestamp);
+        ComposeOrderJointureModel c = new ComposeOrderJointureModel(id_user, ordonnance_id, getMedicalFolderId(), id_ordonn, timestamp);
 
         orderDao.insertJointureComposeOrder(c);
     }
@@ -815,8 +828,9 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
     private void ordonnanceView() throws SQLException, ParseException {
 
         try {
-            addOrder();
+            addOrder(this.id_apointment);
             OrdersDao orderDao = new OrdersDao();
+
             ComposeOrderJointureModel ww = orderDao.selectByIdOrder(ordonnance_id);
 
             MedicalFolderDao medicalFolderDao = new MedicalFolderDao();
@@ -824,7 +838,6 @@ public class MedicalFolder extends javax.swing.JInternalFrame {
             MedicalFolderModel medicalFolderModel = medicalFolderDao.selectById(ww.getMedical_folder_id());
 
             PatientFolderDao patientFolderDao = new PatientFolderDao();
-
             PatientFolderModel patientFolderModel = patientFolderDao.findById(medicalFolderModel.getPatient_folder_id());
 
             ComposeOrder order = new ComposeOrder();

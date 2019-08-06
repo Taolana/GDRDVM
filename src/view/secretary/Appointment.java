@@ -112,6 +112,11 @@ public class Appointment extends javax.swing.JInternalFrame {
         jLabel4.setText("Date");
 
         dateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        dateComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dateComboBoxActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("Créneau");
 
@@ -431,12 +436,16 @@ public class Appointment extends javax.swing.JInternalFrame {
         try {
             RoleModel docMods = (RoleModel) specialitiesComboBox.getSelectedItem();
             this.keyOf = docMods.getIdRole();
-
+            
+            //System.err.println(docMods.getIdRole());
+            
             DoctorDao mdcNameDao = new DoctorDao();
             List<DoctorModel> listMdcNames = mdcNameDao.medicsByKey(keyOf);
-
+            combModelMdc.removeAllElements();
             for (Object m : listMdcNames) {
                 DoctorModel mdc = (DoctorModel) m;
+                //System.err.println(mdc.getFull_name());
+                //System.err.println(m);
                 combModelMdc.addElement(mdc);
             }
 
@@ -475,6 +484,10 @@ public class Appointment extends javax.swing.JInternalFrame {
         showSetting();
     }//GEN-LAST:event_jLabel10MouseClicked
 
+    private void dateComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dateComboBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox crenelComboBox;
@@ -511,7 +524,7 @@ public class Appointment extends javax.swing.JInternalFrame {
     private final DefaultComboBoxModel combModelCreno = new DefaultComboBoxModel();
     private final DefaultComboBoxModel combModelSpecialities = new DefaultComboBoxModel();
 
-    public int keyOf;
+    public static int keyOf;
 
     public void refreshList(String filter) throws SQLException {
         PatientFolderDao patientDao = new PatientFolderDao();
@@ -534,7 +547,7 @@ public class Appointment extends javax.swing.JInternalFrame {
 
         // init specialities
         RoleDao specialitiesDao = new RoleDao();
-        List<RoleModel> listMdcSpecialities = specialitiesDao.selectRole();
+        List<RoleModel> listMdcSpecialities = specialitiesDao.selectRoleMedicaleOnly();
         for (Object m : listMdcSpecialities) {
             RoleModel mdc = (RoleModel) m;
             combModelSpecialities.addElement(mdc);
@@ -562,7 +575,7 @@ public class Appointment extends javax.swing.JInternalFrame {
             java.util.Date date = calendar.getTime();
             String formattedDate = new SimpleDateFormat("EEEE, d MMM yyyy").format(date);
             combModelDate.addElement(formattedDate);
-            calendar.add(Calendar.DATE, i);
+            calendar.add(Calendar.DATE, 1); // manisa +1 @io de tsy azo ovaina io
         }
         dateComboBox.setModel(combModelDate);
 

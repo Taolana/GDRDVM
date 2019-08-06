@@ -48,12 +48,13 @@ public class OrdersDao {
         AccessBdd accessBdd = new AccessBdd();
         PreparedStatement ps = null;
         Connection con = accessBdd.getConnection();
-        String sql = "INSERT INTO `compose_an_order_jointure`( `user_id`, `order_id`, `medical_folder_id`, `timestamp`) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO `compose_an_order_jointure`( `user_id`, `order_id`, `medical_folder_id`, `appointment_id`, `timestamp`) VALUES (?,?,?,?,?)";
         ps = con.prepareStatement(sql);
         ps.setInt(1, c.getUser_id());
         ps.setInt(2, c.getOrder_id());
         ps.setInt(3, c.getMedical_folder_id());
-        ps.setString(4, c.getTs());
+        ps.setInt(4, c.getAppointment_id());
+        ps.setString(5, c.getTs());
         ps.executeUpdate();
         ResultSet rs = ps.getGeneratedKeys();
         int id = 0;
@@ -74,8 +75,9 @@ public class OrdersDao {
             int user_id = rs.getInt("user_id");
             int order_id = rs.getInt("order_id");
             int medical_folder_id = rs.getInt("medical_folder_id");
+            int appointment_id = rs.getInt("appointment_id");
             String ts = rs.getString("timestamp");
-            c = new ComposeOrderJointureModel(id, user_id, order_id, medical_folder_id, ts);
+            c = new ComposeOrderJointureModel(id, user_id, order_id, medical_folder_id, appointment_id, ts);
         }
         return c;
     }
@@ -91,8 +93,9 @@ public class OrdersDao {
             int user_id = rs.getInt("user_id");
             int order_id = rs.getInt("order_id");
             int medical_folder_id = rs.getInt("medical_folder_id");
+            int appointment_id = rs.getInt("appointment_id");
             String ts = rs.getString("timestamp");
-            c = new ComposeOrderJointureModel(id, user_id, order_id, medical_folder_id, ts);
+            c = new ComposeOrderJointureModel(id, user_id, order_id, medical_folder_id,appointment_id, ts);
             containers.add(c);
         }
         return containers;

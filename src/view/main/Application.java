@@ -63,6 +63,7 @@ public class Application extends javax.swing.JFrame {
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestion de dossiers / rendez-vous médicales");
         setExtendedState(MAXIMIZED_BOTH);
 
         userName.setText("Nom du personnel connecté");

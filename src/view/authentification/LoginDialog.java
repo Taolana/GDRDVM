@@ -221,15 +221,15 @@ public class LoginDialog extends javax.swing.JDialog {
     private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
  public Integer user = null;
- public UserModel userFullName = null;
- public Integer idMedical = null;
+    public UserModel userFullName = null;
+    public Integer idMedical = null;
 
     private void authentification() {
         String login = loginTextField.getText();
         String password = passwordField.getText();
-        if (login.equals("") ||  password.equals("")){
+        if (login.equals("") || password.equals("")) {
             errorMessage.setText("Vous n'avez pas rempli le formulaire!");
-        }else{
+        } else {
             String hashed = MD5(password);
             UserDao userDao = new UserDao();
             try {
@@ -248,7 +248,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         Application app = null;
                         app = new Application();
                         this.setVisible(false);
-                        app.userName.setText("Développeur: "+userFullName.getFull_name());
+                        app.userName.setText("Développeur: " + userFullName.getFull_name());
                         app.idMedic = userFullName.getId();
 
                         app.setVisible(true);
@@ -260,7 +260,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         Application appForSecretary = null;
                         appForSecretary = new Application();
                         this.setVisible(false);
-                        appForSecretary.userName.setText("Sécretaire: "+userFullName.getFull_name());
+                        appForSecretary.userName.setText("Sécretaire: " + userFullName.getFull_name());
                         appForSecretary.newMenu.getItem(2).setVisible(false); // Utilisateur
                         appForSecretary.folderMenu.getItem(1).setVisible(false); // Nouveau dossier médical
                         appForSecretary.setVisible(true);
@@ -275,7 +275,7 @@ public class LoginDialog extends javax.swing.JDialog {
                         appForGeneralist = new Application();
                         this.setVisible(false);
                         appForGeneralist.setVisible(true);
-                        appForGeneralist.userName.setText("Généraliste: "+userFullName.getFull_name());
+                        appForGeneralist.userName.setText("Généraliste: " + userFullName.getFull_name());
                         appForGeneralist.newMenu.getItem(0).setVisible(false);
                         appForGeneralist.newMenu.getItem(2).setVisible(false);
                         appForGeneralist.folderMenu.getItem(0).setVisible(false);
@@ -283,13 +283,43 @@ public class LoginDialog extends javax.swing.JDialog {
                         appForGeneralist.viewMenu.getItem(1).setVisible(false); // Rendez-vous
                         appForGeneralist.idMedic = userFullName.getId();
                         break;
+                    case 4:
+                        //Radiologue
+
+                        Application appForRadiologist = null;
+                        appForRadiologist = new Application();
+                        this.setVisible(false);
+                        appForRadiologist.setVisible(true);
+                        appForRadiologist.userName.setText("Radiologue: " + userFullName.getFull_name());
+                        appForRadiologist.newMenu.getItem(0).setVisible(false);
+                        appForRadiologist.newMenu.getItem(2).setVisible(false);
+                        appForRadiologist.folderMenu.getItem(0).setVisible(false);
+                        appForRadiologist.viewMenu.getItem(0).setVisible(false);
+                        appForRadiologist.viewMenu.getItem(1).setVisible(false); // Rendez-vous
+                        appForRadiologist.idMedic = userFullName.getId();
+                        break;
+                    case 5:
+                        //dentist
+
+                        Application appForDentist = null;
+                        appForDentist = new Application();
+                        this.setVisible(false);
+                        appForDentist.setVisible(true);
+                        appForDentist.userName.setText("Dentiste: " + userFullName.getFull_name());
+                        appForDentist.newMenu.getItem(0).setVisible(false);
+                        appForDentist.newMenu.getItem(2).setVisible(false);
+                        appForDentist.folderMenu.getItem(0).setVisible(false);
+                        appForDentist.viewMenu.getItem(0).setVisible(false);
+                        appForDentist.viewMenu.getItem(1).setVisible(false); // Rendez-vous
+                        appForDentist.idMedic = userFullName.getId();
+                        break;
                     default:
                         break;
                 }
             } else {
                 errorMessage.setText("Authentification ratée, veuillez réessayer!");
             }
-            
+
         }
     }
 }

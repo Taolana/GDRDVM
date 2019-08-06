@@ -159,6 +159,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="title" type="java.lang.String" value="Gestion de dossiers / rendez-vous m&#xe9;dicales"/>
     <Property name="extendedState" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
       <Connection code="MAXIMIZED_BOTH" type="code"/>
     </Property>

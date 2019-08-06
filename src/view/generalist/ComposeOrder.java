@@ -397,7 +397,14 @@ public class ComposeOrder extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            MedicalFolder m = new MedicalFolder();
+            m.initTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(ComposeOrder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 

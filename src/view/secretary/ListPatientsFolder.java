@@ -387,7 +387,11 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     private void numbersToShowComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numbersToShowComboBoxActionPerformed
         limit = numbersToShowComboBox.getSelectedItem();
         try {
-            patientFolderList("", limit.toString());
+            if (limit != null) {
+                patientFolderList("", limit.toString());
+            }else{
+                patientFolderList("", "");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ListPatientsFolder.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -456,19 +460,23 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
 
         if (countPatients >= 1) {
             int[] liste = {10, 20, 30, 50, 100, 200, 1000, countPatients};
+            modelNumbersToShow.removeAllElements();
             for (Object o : liste) {
                 modelNumbersToShow.addElement(o);
+
             }
             this.numbersToShowComboBox.setModel(modelNumbersToShow);
         } else {
             this.numbersToShowComboBox.setEnabled(false);
         }
-        this.numbersToShowComboBox.setSelectedIndex(7);
+        this.numbersToShowComboBox.setSelectedIndex(0);
         lastInsertedPatient();
     }
 
-    public void patientFolderList(String value, String limit) throws SQLException {
-
+    public void patientFolderList(String value ,String limit) throws SQLException {
+        
+        value = "";
+        limit = "";
         String[] columnNames = {
             "#", "Nom", "Prénom"
         };
@@ -552,7 +560,7 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
             adressLabel.setText(adress);
 
         } else {
-            System.out.println("Tableau vide");
+            System.out.println("Tableau des liste de patients vide");
         }
 
     }
@@ -612,7 +620,7 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
                 //System.err.println(listPatientTable.getRowCount());
             } else {
                 patientFolderModel = patient.selectWithLimitAndFilter(limit.toString());
-                System.err.println(listPatientTable.getRowCount());
+                // System.err.println(listPatientTable.getRowCount());
             }
 
             String first_name = patientFolderModel.get(index).getFirst_name();
@@ -651,7 +659,6 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
             create.adressTextField.setText(adress);
 
             create.saveButton.setText("Modifier");
-            
 
         } else {
             System.out.println("Tableau vide");
@@ -661,6 +668,7 @@ public class ListPatientsFolder extends javax.swing.JInternalFrame {
     private void refreshAll() throws SQLException {
         this.searchValueTextField.setText("");
         this.numbersToShowComboBox.setSelectedIndex(7);
+        patientFolderList("", "");
         lastInsertedPatient();
     }
 

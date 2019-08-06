@@ -25,6 +25,25 @@ public class RoleDao {
     public List<RoleModel> selectRole(){
         RoleModel roleModel = null;
         List roleList = new ArrayList();
+        String sql = "SELECT * FROM `roles`  WHERE id > 0 ";
+        AccessBdd accessBdd = new AccessBdd();
+        accessBdd.loadDriver();
+        var rs =  accessBdd.executeSelect(sql);
+        try {
+            while(rs.next()){
+                String libel = rs.getString("libel");
+                int role_id = Integer.parseInt(rs.getString("id"));
+                roleModel = new RoleModel(role_id, libel);
+                roleList.add(roleModel);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RoleDao.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return roleList;
+    }
+    public List<RoleModel> selectRoleMedicaleOnly(){
+        RoleModel roleModel = null;
+        List roleList = new ArrayList();
         String sql = "SELECT * FROM `roles`  WHERE id > 2 ";
         AccessBdd accessBdd = new AccessBdd();
         accessBdd.loadDriver();
